@@ -56,11 +56,12 @@
     }
     .insight h2 {
       margin: 0 0 8px 0;
-      font-size: 24px;
-      line-height: 1.5;
+      font-size: 27px;
+      line-height: 1.25;
     }
     .insight p {
       margin: 0;
+      margin-top: 1em;
       color: #333;
     }
 
@@ -83,9 +84,6 @@
   <script>
   (() => {
     'use strict';
-
-    // IMPORTANT: switched TikTok to the official iframe Player for reliability + autoplay control.
-    // See: https://developers.tiktok.com/doc/embed-player
 
     // --- Data ---------------------------------------------------------------
     const POSTS = [
@@ -138,21 +136,67 @@
       { type: 'twitter', url: 'https://x.com/Jenlyst_2307/status/1952694980998463836' }
     ];  
     
-    // --- Text insights ------------------------------------------------------
+    // --- Feed with text insights ------------------------------------------------------
     
-    const INSIGHTS = {
-      0: {type: 'insight',
+    const FEED = [
+      {type: 'insight',
         title: 'Gen Z live on their phones for over six hours a day. That\'s why we\'ve curated a digital feed.', 
-        text:'This feed has been created to give you a glimpse into the online world of Gen Z. Who are they listening to, understanding the dynamics between algorithm, person & creator, and decoding their exclusive vacuum of internet semiotics.'},
-      3: { type: 'insight', title: 'How vision shapes emotion', text: 'More than 80% of learning happens visually — how we see shapes how we feel.' },
-      10: { type: 'insight', title: 'The hidden costs of screen time', text: 'Excessive screen exposure is now the leading cause of digital eye strain in young adults.' },
-      15: { type: 'insight', title: 'Eyewear as identity', text: 'Glasses aren\'t just functional — they shape self-image, identity, and perception.' },
-    };
+        text: 'This feed has been created to give you a glimpse into the online world of Gen Z. \
+        Who are they listening to, understanding the dynamics between algorithm, person & creator? And decoding their exclusive vacuum of internet semiotics. \
+        \\n\\n There are 2 guiding compasses of the scroll: what they want to feel, and what they want to achieve. \
+        \\n\\n **Feeling**: | Scared | Sad | Amused | Comforted | Reassured | Confident | Inspired | \
+        \\n\\n **Finding**: | Learning | Entertainment | Inspiration |'},
+      { type: 'insight', 
+        title: 'The Spectrum of Social Media', 
+        text: 'xxx' },
+      POSTS[0],
+      POSTS[1],
+      POSTS[2],
+      POSTS[3],
+      POSTS[4],
+      { type: 'insight', 
+        title: 'What\'s gone viral in 2025?', 
+        text: 'Comedy, POVs, and meme culture. \
+        \\n\\n AI and technology. \
+        \\n\\n TikTok sounds. \
+        \\n\\n Feel-good. \
+        \\n\\n Most liked video.' },
+      POSTS[5],
+      POSTS[6],
+      POSTS[7],
+      POSTS[8],
+      POSTS[9],
+      { type: 'insight', 
+        title: 'Who are they listening to?', 
+        text: 'Celebrities, influencers, and other users - via content, comments, and communities.' },
+      POSTS[10],
+      { type: 'insight', 
+        title: 'Social Media = Learning and Inspiration', 
+        text: 'People get their information from a number of sources, influencers, content creators, and other users (e.g. reddit).' },
+      POSTS[11],
+      { type: 'insight', 
+        title: 'Misrepresentation, misinformation, and cancel culture.', 
+        text: 'xxx' },
+      POSTS[12],
+      { type: 'insight', 
+        title: 'Contradictions and fluid identity cognitive dissonance.', 
+        text: 'xxx' },
+      POSTS[13],
+      { type: 'insight', 
+        title: 'Memes', 
+        text: 'xxx' },
+      POSTS[14],
+      { type: 'insight', 
+        title: 'Speaking in code.', 
+        text: 'xxx' },
+      POSTS[15]
+    ];
 
     const feed = document.getElementById('feed');
     const tpl  = document.getElementById('cardTpl');
 
     // --- TikTok Player helpers (iframe-based) --------------------------------
+
     const ttPlayers = new WeakMap(); // iframe -> state
     function ttIframeSrc(id, opts = {}) {
       const q = new URLSearchParams({
@@ -242,20 +286,25 @@
         art.__mount = () => {
           const box = document.createElement('section');
           box.className = 'insight';
+
+          // Parse text: split on literal \n\n, then support **bold** and *italic*
+          const paragraphs = (post.text || '')
+            .split('\\n\\n')
+            .map((para) => {
+              const formatted = para
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>') // bold
+                .replace(/\*(.+?)\*/g, '<em>$1</em>');             // italic
+              return `<p>${formatted.trim()}</p>`;
+            })
+            .join('');
+
           box.innerHTML = `
             <img class="brand-header" src="logo.png" alt="Logo">
             <h2>${post.title || 'Insight'}</h2>
-            <p>${post.text || ''}</p>
+            ${paragraphs}
           `;
+
           wrap.appendChild(box);
-          art.setAttribute('aria-busy', 'false');
-        };
-      } else {
-        art.__mount = () => {
-          const a = document.createElement('a');
-          a.href = post.url || post.cite || '#'; a.target = '_blank'; a.rel = 'noopener';
-          a.textContent = 'Open post';
-          wrap.appendChild(a);
           art.setAttribute('aria-busy', 'false');
         };
       }
@@ -275,21 +324,21 @@
       });
     }
 
-    function mixPostsWithInsights(posts, insightsMap) {
-      const combined = [];
-      for (let i = 0; i < posts.length; i++) {
-        if (insightsMap[i]) {
-          combined.push(insightsMap[i]); // insert insight BEFORE post[i]
-        }
-        combined.push(posts[i]);
-      }
-      return combined;
-    }
+    // function mixPostsWithInsights(posts, insightsMap) {
+    //   const combined = [];
+    //   for (let i = 0; i < posts.length; i++) {
+    //     if (insightsMap[i]) {
+    //       combined.push(insightsMap[i]); // insert insight BEFORE post[i]
+    //     }
+    //     combined.push(posts[i]);
+    //   }
+    //   return combined;
+    // }
 
-    const withInsights = mixPostsWithInsights(POSTS,INSIGHTS);
+    // const withInsights = mixPostsWithInsights(POSTS,INSIGHTS);
 
-    const arts = withInsights.map((p) => {
-      const frag = makeCard(p);
+    const arts = FEED.map((post) => {
+      const frag = makeCard(post);
       const art = frag.querySelector('article');
       feed.appendChild(frag);
       art.__mounted = false;
