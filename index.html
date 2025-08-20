@@ -246,24 +246,32 @@
       if (post.type === 'tiktok') {
         art.dataset.kind = 'tiktok';
         art.dataset.vid = post.videoId;
+
         art.__mount = () => {
           const holder = document.createElement('div');
           holder.className = 'tiktok-wrap';
+          holder.style.minHeight = '500px';
 
-          const f = document.createElement('iframe');
-          f.className = 'tt-player';
-          f.src = `https://www.tiktok.com/embed/v2/${post.videoId}?lang=en`;
-          f.allowFullscreen = true;
-          f.setAttribute('allow', 'encrypted-media; fullscreen;');
-          f.setAttribute('loading', 'lazy');
-          f.frameBorder = 0;
-          f.style.aspectRatio = '9 / 16';
-          f.style.width = '100%';
+          // Lazy-load iframe only on mount
+          const iframe = document.createElement('iframe');
+          iframe.className = 'tt-player';
+          iframe.src = `https://www.tiktok.com/embed/v2/${post.videoId}?lang=en`;
+          iframe.allowFullscreen = true;
+          iframe.setAttribute('allow', 'encrypted-media; fullscreen;');
+          iframe.setAttribute('loading', 'lazy');
+          iframe.frameBorder = 0;
+          iframe.style.width = '100%';
+          iframe.style.aspectRatio = '9 / 16';
 
-          holder.appendChild(f);
+          holder.appendChild(iframe);
           wrap.appendChild(holder);
 
           art.setAttribute('aria-busy', 'false');
+        };
+
+        art.__unmount = () => {
+          const holder = wrap.querySelector('.tiktok-wrap');
+          if (holder) holder.remove(); // clean up to free memory
         };
       } else if (post.type === 'instagram') {
         art.dataset.kind = 'instagram';
