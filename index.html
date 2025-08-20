@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A Scroll in the Life</title>
+  <meta name="description" content="A simple, accessible, vertical feed for curated social posts and videos related to vision care." />
+
+  <!-- Connection hints for third‑party embeds -->
+  <link rel="dns-prefetch" href="https://www.tiktok.com">
+  <link rel="preconnect" href="https://www.tiktok.com" crossorigin>
+  <link rel="dns-prefetch" href="https://www.instagram.com">
+  <link rel="preconnect" href="https://www.instagram.com" crossorigin>
+  <link rel="dns-prefetch" href="https://platform.twitter.com">
+  <link rel="preconnect" href="https://platform.twitter.com" crossorigin>
+  <link rel="dns-prefetch" href="https://cdn.syndication.twimg.com">
+  <link rel="preconnect" href="https://cdn.syndication.twimg.com" crossorigin>
+
+  <style>
+    html, body { height: 100%; margin: 0; }
+    body { font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:#fff; color:#111; }
+    #feed {
+      height: 100dvh;
+      overflow-y: auto;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      background: #fff;
+    }
+    .card {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      padding: 8px;
+      box-sizing: border-box;
+    }
+    .mediaWrap {
+      display:flex; align-items:center; justify-content:center; width:100%;
+    }
+    .mediaWrap > * { max-width: 540px; width: 100%; }
+    .tt-player { aspect-ratio: 9 / 16; border: 0; width: 100%; }
+    .tiktok-embed, .instagram-media, .twitter-tweet { max-width:540px; width:100%; margin:0 auto; }
+    footer { text-align:center; padding: 12px 0; color:#555; }
+  </style>
+</head>
+<body>
+  <main id="feed" aria-live="polite"></main>
+  <footer>Built by Sense Worldwide.</footer>
+
+  <template id="cardTpl">
+    <article class="card" tabindex="0" aria-busy="true"><div class="mediaWrap"></div></article>
+  </template>
+
+  <script>
+  (() => {
+    'use strict';
+
+    // IMPORTANT: switched TikTok to the official iframe Player for reliability + autoplay control.
+    // See: https://developers.tiktok.com/doc/embed-player
+
+    // --- Data ---------------------------------------------------------------
+    const POSTS = [
+      { type: 'instagram', url: 'https://www.instagram.com/p/DF_fPpzpDgq/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DNI3YOgz2zn/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DMvKSUGyWAy/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DM9aXCBuDe8/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DKzhVLxxzJA/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DFasfQuzWWA/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DNLveTfMzf6/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/CV3-1AvAmBv/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DNJUWSJyjlm/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DChWQpOyhxR/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DFn1l4QyUCq/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DJ12ZtLssIg/' },
+      // { type: 'instagram', url: 'https://www.instagram.com/p/B2b84arJWgH/' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DM-RB3ky_6A/' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@francesca_ourlittlelife/video/7210767826682907931', videoId: '7210767826682907931' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@niafromnyc/video/7275340104791625002', videoId: '7275340104791625002' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@lucieliftss/video/7239457911213133083', videoId: '7239457911213133083' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@katelyn__pons/video/7159351189186809130', videoId: '7159351189186809130' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@dantexjohnson/video/7518470686365519135', videoId: '7518470686365519135' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@shanwicki/video/7383031245166382366', videoId: '7383031245166382366' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@eyestheticsofficial/video/7491789495784819974', videoId: '7491789495784819974' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@syrianpsycho/video/7425032002467908906', videoId: '7425032002467908906' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@tabithaswatosh/video/7523764682482650399', videoId: '7523764682482650399' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@seriouslyzila/video/7525278329218272543', videoId: '7525278329218272543' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@aliciavictoria.irl/video/7530093453586255134', videoId: '7530093453586255134' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@eyestheticsofficial/video/7532973566040526085', videoId: '7532973566040526085' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@eyestheticsofficial/video/7530370135362751750', videoId: '7530370135362751750' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@brinley.phillips0/video/7537424246650293534', videoId: '7537424246650293534' },
+      { type: 'tiktok', cite: 'https://www.tiktok.com/@elizabethscott171/video/7536230761448344855', videoId: '7536230761448344855' },
+      { type: 'twitter', url: 'https://x.com/bickduttbooba/status/1954967169407611174' },
+      { type: 'twitter', url: 'https://x.com/DabdosVO/status/1953586966097793317' },
+      { type: 'twitter', url: 'https://x.com/Innov_Medicine/status/1610827909614260224' },
+      { type: 'twitter', url: 'https://x.com/tho_chotika/status/1953623313697411156' },
+      { type: 'twitter', url: 'https://x.com/Habibakatsha/status/1951552223445504396' },
+      { type: 'twitter', url: 'https://x.com/karlogan_/status/1952323122398646656' },
+      { type: 'twitter', url: 'https://x.com/nwamaka_ma40003/status/1955941595930308850' },
+      { type: 'twitter', url: 'https://x.com/baobabeyewear/status/1955940133892710873' },
+      { type: 'twitter', url: 'https://x.com/Capra_Vi/status/1955936909689020802' },
+      { type: 'twitter', url: 'https://x.com/bekindhny/status/1952657320615333930' },
+      { type: 'twitter', url: 'https://x.com/Babygravy9/status/1656362057007001603' },
+      { type: 'twitter', url: 'https://x.com/ShouldHaveCat/status/1953736650309144630' },
+      { type: 'twitter', url: 'https://x.com/DonnieCaves/status/1955942658515292489' },
+      { type: 'twitter', url: 'https://x.com/_amkxx/status/1952738518658375864' },
+      { type: 'twitter', url: 'https://x.com/TechBurritoUno/status/1606703190073782273' },
+      { type: 'twitter', url: 'https://x.com/nyneruh/status/1955490506940747946' },
+      { type: 'twitter', url: 'https://x.com/RewiredChaos/status/1953406719171637615' },
+      { type: 'twitter', url: 'https://x.com/as1faa/status/1955501153116135653' },
+      { type: 'twitter', url: 'https://x.com/Not_End_User/status/1955328672983822552' },
+      { type: 'twitter', url: 'https://x.com/Jenlyst_2307/status/1952694980998463836' }
+    ];
+
+    const feed = document.getElementById('feed');
+    const tpl  = document.getElementById('cardTpl');
+
+    // Shuffle for variety
+    const shuffled = POSTS.slice();
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    // --- TikTok Player helpers (iframe-based) --------------------------------
+    const ttPlayers = new WeakMap(); // iframe -> state
+    function ttIframeSrc(id, opts = {}) {
+      // opts: autoplay, controls, loop
+      const q = new URLSearchParams({
+        autoplay: String(opts.autoplay ?? 0),
+        controls: String(opts.controls ?? 0),
+        loop:     String(opts.loop ?? 1),
+        music_info: '0',
+        description: '0'
+      });
+      return `https://www.tiktok.com/player/v1/${id}?${q}`;
+    }
+    function postToPlayer(iframe, type, value) {
+      try {
+        iframe.contentWindow && iframe.contentWindow.postMessage({ 'x-tiktok-player': true, type, value }, '*');
+      } catch {}
+    }
+    window.addEventListener('message', (ev) => {
+      const data = ev.data || {};
+      if (!data || !data['x-tiktok-player']) return;
+      const iframes = Array.from(document.querySelectorAll('iframe.tt-player'));
+      for (const f of iframes) {
+        // We don't get a target in data, so we just mark all visible iframes ready on first ready event
+        // and rely on play/pause logic to control only the intersecting one.
+        const st = ttPlayers.get(f) || {};
+        if (data.type === 'onPlayerReady') st.ready = true;
+        if (data.type === 'onStateChange') st.state = data.value;
+        ttPlayers.set(f, st);
+      }
+    });
+
+    // --- Card Factory ---------------------------------------------------------
+    const safeIg = (url) => {
+      try {
+        const u = new URL(url);
+        if (!u.pathname.endsWith('/')) u.pathname += '/';
+        u.search = ''; u.hash = '';
+        return u.toString();
+      } catch { return url; }
+    };
+
+    function makeCard(post) {
+      const frag = tpl.content.cloneNode(true);
+      const art = frag.querySelector('article');
+      const wrap = frag.querySelector('.mediaWrap');
+
+      if (post.type === 'tiktok') {
+        art.dataset.kind = 'tiktok';
+        art.dataset.vid = post.videoId;
+        art.__mount = () => {
+          // Create iframe player (muted so autoplay passes browser policies)
+          const f = document.createElement('iframe');
+          f.className = 'tt-player';
+          f.setAttribute('allow', 'autoplay; fullscreen; picture-in-picture');
+          f.setAttribute('allowfullscreen', '');
+          f.setAttribute('title', 'TikTok');
+          f.src = ttIframeSrc(post.videoId, { autoplay: 0, controls: 0, loop: 1 });
+          wrap.appendChild(f);
+          ttPlayers.set(f, { ready: false });
+          art.setAttribute('aria-busy', 'false');
+        };
+      } else if (post.type === 'instagram') {
+        art.__mount = () => {
+          const holder = document.createElement('div');
+          holder.innerHTML = '<blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="' +
+            safeIg(post.url) +
+            '" data-instgrm-version="14" style="background:#FFF;border:0;border-radius:3px;box-shadow:0 0 1px rgba(0,0,0,.5),0 1px 10px rgba(0,0,0,.15);margin:1px;max-width:540px;min-width:326px;width:100%;"></blockquote>';
+          wrap.appendChild(holder);
+          loadScriptOnce('https://www.instagram.com/embed.js', '__ig').then(() => {
+            window.instgrm && window.instgrm.Embeds && window.instgrm.Embeds.process();
+          });
+          art.setAttribute('aria-busy', 'false');
+        };
+      } else if (post.type === 'twitter') {
+        art.__mount = () => {
+          const holder = document.createElement('div');
+          wrap.appendChild(holder);
+          const id = (post.url && (post.url.match(/status\/(\d{5,})/) || [])[1]);
+          if (!id) { holder.innerHTML = '<p><a target="_blank" rel="noopener" href="'+(post.url||'#')+'">View on X</a></p>'; art.setAttribute('aria-busy','false'); return; }
+          loadScriptOnce('https://platform.twitter.com/widgets.js', '__tw').then(() => {
+            window.twttr && window.twttr.widgets && window.twttr.widgets.createTweet(id, holder, { align: 'center', dnt: true });
+          });
+          art.setAttribute('aria-busy', 'false');
+        };
+      } else {
+        art.__mount = () => {
+          const a = document.createElement('a');
+          a.href = post.url || post.cite || '#'; a.target = '_blank'; a.rel = 'noopener';
+          a.textContent = 'Open post';
+          wrap.appendChild(a);
+          art.setAttribute('aria-busy', 'false');
+        };
+      }
+
+      return frag;
+    }
+
+    // Load a script once
+    function loadScriptOnce(src, flag) {
+      return new Promise((resolve) => {
+        if (window[flag]) return resolve();
+        const s = document.createElement('script');
+        s.async = true; s.src = src;
+        s.onload = () => { window[flag] = true; resolve(); };
+        s.onerror = () => resolve();
+        document.head.appendChild(s);
+      });
+    }
+
+    // Build feed without mounting
+    const arts = shuffled.map((p) => {
+      const frag = makeCard(p);
+      const art = frag.querySelector('article');
+      feed.appendChild(frag);
+      return art;
+    });
+
+    // Lazy mount + lookahead
+    const rootEl = feed;
+    const AHEAD = 2;
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const art = e.target;
+        // mount now
+        if (typeof art.__mount === 'function') { art.__mount(); art.__mount = null; }
+        // small lookahead
+        const idx = arts.indexOf(art);
+        for (let k = 1; k <= AHEAD; k++) {
+          const n = arts[idx + k];
+          if (n && typeof n.__mount === 'function') {
+            (window.requestIdleCallback || window.requestAnimationFrame)(() => { n.__mount(); n.__mount = null; });
+          }
+        }
+        io.unobserve(art);
+      });
+    }, { root: rootEl, rootMargin: '800px 0px', threshold: 0.01 });
+
+    arts.forEach((a) => io.observe(a));
+
+    // Eagerly mount first
+    if (arts.length && typeof arts[0].__mount === 'function') { arts[0].__mount(); arts[0].__mount = null; }
+
+    // --- Autoplay controller (play the card in view, pause others) -----------
+    const playIo = new IntersectionObserver((entries) => {
+      // We only ever want a single playing TikTok at a time
+      // Pause all first
+      const iframes = Array.from(document.querySelectorAll('iframe.tt-player'));
+      for (const f of iframes) postToPlayer(f, 'pause');
+
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const art = e.target;
+        if (art.dataset.kind === 'tiktok') {
+          const iframe = art.querySelector('iframe.tt-player');
+          if (iframe) {
+            // Mute first to satisfy autoplay policies, then play
+            // postToPlayer(iframe, 'mute');
+            postToPlayer(iframe, 'play');
+          }
+        }
+        break; // only first visible
+      }
+    }, { root: rootEl, threshold: 0.6 });
+
+    // Observe only TikTok cards for autoplay
+    function refreshPlayObservers() {
+      arts.forEach((a) => { if (a.dataset.kind === 'tiktok') playIo.observe(a); });
+    }
+    // Wait a tick so some iframes exist
+    setTimeout(refreshPlayObservers, 300);
+
+    // Optional: keyboard up/down to advance
+    rootEl.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      e.preventDefault();
+      const list = Array.from(document.querySelectorAll('.card'));
+      const top0 = rootEl.getBoundingClientRect().top;
+      let idx = 0, min = Infinity;
+      for (let i = 0; i < list.length; i++) {
+        const top = Math.abs(list[i].getBoundingClientRect().top - top0);
+        if (top < min) { min = top; idx = i; }
+      }
+      const next = e.key === 'ArrowDown' ? Math.min(idx+1, list.length-1) : Math.max(idx-1, 0);
+      list[next].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, { passive: false });
+
+  })();
+  </script>
+</body>
+</html>
