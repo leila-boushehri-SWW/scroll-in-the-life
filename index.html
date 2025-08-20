@@ -56,12 +56,18 @@
     }
     .insight h2 {
       margin: 0 0 8px 0;
-      font-size: 22px;
+      font-size: 24px;
       line-height: 1.5;
     }
     .insight p {
       margin: 0;
       color: #333;
+    }
+
+    .insight .brand-header {
+      display: block;
+      margin: 0 auto 12px;
+      max-width: 100%;
     }
 
   </style>
@@ -236,7 +242,11 @@
         art.__mount = () => {
           const box = document.createElement('section');
           box.className = 'insight';
-          box.innerHTML = '<h2>' + (post.title || 'Insight') + '</h2><p>' + (post.text || '') + '</p>';
+          box.innerHTML = `
+            <img class="brand-header" src="logo.png" alt="Logo">
+            <h2>${post.title || 'Insight'}</h2>
+            <p>${post.text || ''}</p>
+          `;
           wrap.appendChild(box);
           art.setAttribute('aria-busy', 'false');
         };
