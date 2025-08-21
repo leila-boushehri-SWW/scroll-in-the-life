@@ -30,11 +30,24 @@
     .card {
       scroll-snap-align: start;
       scroll-snap-stop: always;
-      min-height: 100dvh;
-      display: grid;
-      place-items: center;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+    .card-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 8px;
       box-sizing: border-box;
+    }
+    .card-scroll > * {
+      max-width: 540px;
+      width: 100%;
     }
     .mediaWrap {
       display:flex; align-items:center; justify-content:center; width:100%;
@@ -78,7 +91,11 @@
   <footer>Built by Sense Worldwide.</footer>
 
   <template id="cardTpl">
-    <article class="card" tabindex="0" aria-busy="true"><div class="mediaWrap"></div></article>
+    <article class="card" tabindex="0" aria-busy="true">
+      <div class="card-scroll">
+        <div class="mediaWrap"></div>
+      </div>
+    </article>
   </template>
 
   <script>
@@ -95,12 +112,12 @@
         \\n\\n How does the content they consume shape and inspire their opinions, attitudes, and behaviours? \
         \\n\\n What kind of content grabs their attention? \
         \\n\\n How do they reinterpret the world through the lens of memes and internet syntax?' },
-      { type: 'image', src: 'images/27eada12a6d29da05b2b9ae1644347a4.jpeg' },
       { type: 'tiktok', videoId: '7512105436674362655' },
       { type: 'tiktok', videoId: '7519269824963317022' },
       { type: 'tiktok', videoId: '7504960819571084566' },
       { type: 'tiktok', videoId: '7478314772165971222' },
       { type: 'tiktok', videoId: '7505130824665140482' },
+      { type: 'image', src: 'images/27eada12a6d29da05b2b9ae1644347a4.jpeg' },
       { type: 'instagram', url: 'https://www.instagram.com/p/DJ6pR51g2ED/' },
       { type: 'insight', 
         title: 'Who are they listening to?', 
@@ -123,8 +140,8 @@
       { type: 'tiktok', videoId: '7500244332872617262' },
       { type: 'insight', 
         title: 'Micro-Communities',
-        text: 'People engage with micro communities that align with their interests. In reddit this looks like joining \
-        communities, on TikTok and Instagram this translates through one\'s algorithm.' },
+        text: 'People engage with micro communities that align with their interests. On Reddit this looks like joining \
+        communities, and on TikTok and Instagram this translates through one\'s algorithm.' },
       { type: 'image', src: 'images/Screenshot 2025-08-20 at 12.33.54.png' },
       { type: 'image', src: 'images/Screenshot 2025-08-20 at 12.35.45.png' },
       { type: 'image', src: 'images/Screenshot 2025-08-20 at 11.31.34.png' },
@@ -148,20 +165,26 @@
         \\n\\n Content that provokes strong emotions, fear, shock, outrage, is far more likely to capture attention and go viral. \
         Algorithms that reward engagement then amplify these posts, creating an echo chamber where the most polarizing material \
         dominates. What begins as a single post can quickly snowball, both for the collective and for the individual. \
-        \\n\\n **Doom Scrolling - Individual** \
+        \\n\\n **Doom Scrolling** \
         \\n\\n A casual search or chance encounter with one post can spiral into a rabbit hole of fear-driven content, reinforcing anxiety \
-        and keeping users hooked. \
-        \\n\\n **Misrepresentation - Collective** \
-        \\n\\n A single horror story or anomaly can achieve viral reach, often stripped of context and presented \
-        as the norm. This can distort perception and drive public opinion based on exceptions rather than evidence. \
-        \\n\\n **Misinformation** \
-        \\n\\n Even with regulations and moderation, misinformation spreads easily. The gray zone of “not proven wrong, but not \
-        proven right” is particularly problematic, especially when amplified on platforms with massive audiences.' },
-      { type: 'twitter', url: 'https://x.com/banbadmen/status/1870030466381721913' },
+        and keeping users hooked.' },
+      { type: 'insight', 
+        title: 'Misrepresentation', 
+        text: 'A single horror story or anomaly can achieve viral reach, often stripped of context and presented \
+        as the norm. This can distort perception and drive public opinion based on exceptions rather than evidence.' },
       { type: 'tiktok', videoId: '7398375230420323614' },
       { type: 'image', src: 'images/IMG_8875.png' },
+      { type: 'insight', 
+        title: 'Misinformation', 
+        text: 'Even with regulations and moderation, misinformation spreads easily. The gray zone of “not proven wrong, but not \
+        proven right” is particularly problematic, especially when amplified on platforms with massive audiences.' },
       { type: 'tiktok', videoId: '7486518164843416837' },
-      { type: 'image', src: 'images/image.png' },
+      { type: 'image', src: 'images/IMG_8867.png' },
+      // { type: 'image', src: 'images/image.png' },
+      { type: 'insight', 
+        title: 'Cancel Culture', 
+        text: 'xxx.' },
+      { type: 'twitter', url: 'https://x.com/banbadmen/status/1870030466381721913' },
       { type: 'insight', 
         title: 'Fluid Identity and Embracing Contradictions', 
         text: '**Fluid Identity** \
@@ -173,8 +196,8 @@
         juxtapositions create a sense of novelty, something especially valuable in today\'s sea of digital noise.' },
       { type: 'tiktok', videoId: '7123685232489958702' },
       { type: 'tiktok', videoId: '7458831430114675974' },
-      { type: 'instagram', url: 'https://www.instagram.com/p/C_ElTquy_4P/' },
-      { type: 'tiktok', videoId: '' },
+      // { type: 'instagram', url: 'https://www.instagram.com/p/C_ElTquy_4P/' },
+      // { type: 'tiktok', videoId: '' },
       { type: 'insight', 
         title: 'Memes and Speaking in Code', 
         text: '**Memes** \
@@ -187,9 +210,9 @@
         existing formats to create something new. What might look like nonsense to outsiders is actually a dense, context-rich \
         form of communication. Meme syntax and generational slang serve as social glue, a way to signal belonging, wit, and cultural \
         awareness in an attention economy where speed and relatability matter most.' },
-      { type: 'image', src: 'images/4a83e976139837c2e4c3f0b27a37dc4f.jpeg' },
       { type: 'image', src: 'images/Screenshot 2025-08-20 at 13.48.36.png' },
-      { type: 'image', src: 'images/Screenshot 2025-08-20 at 14.08.25.png' }
+      { type: 'image', src: 'images/Screenshot 2025-08-20 at 14.08.25.png' },
+      { type: 'image', src: 'images/4a83e976139837c2e4c3f0b27a37dc4f.jpeg' }
     ];
 
     const feed = document.getElementById('feed');
@@ -232,6 +255,7 @@
       const frag = tpl.content.cloneNode(true);
       const art = frag.querySelector('article');
       const wrap = frag.querySelector('.mediaWrap');
+      const scroll = frag.querySelector('.card-scroll');
 
       if (post.type === 'tiktok') {
         art.dataset.kind = 'tiktok';
