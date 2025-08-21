@@ -22,9 +22,9 @@
     #feed {
       height: auto;
       overflow-y: auto;
-/*       scroll-snap-type: y mandatory;
-      scroll-behavior: smooth;
-      -webkit-overflow-scrolling: touch; */
+      /* scroll-snap-type: y mandatory; */
+      /* scroll-behavior: smooth; */
+      /* -webkit-overflow-scrolling: touch; */
       background: #fff;
     }
     .card {
@@ -54,7 +54,7 @@
     .tt-player {
       width: 100%;
       aspect-ratio: 9 / 16;
-      max-height: 90vh;
+      /* max-height: 90vh; */
       border: 0;
       overflow: hidden;
       pointer-events: auto;
@@ -200,7 +200,10 @@
       // { type: 'image', src: 'images/image.png' },
       { type: 'insight', 
         title: 'Cancel Culture', 
-        text: 'xxx.' },
+        text: 'In a similar vein to the above, when brands, influencers, or celebrities launch a poorly judged post, it doesn/\'t \
+        get forgotten. In fact, creators often make sure to bring it back to light if the respective individual/brand tries to \
+        “move on” and act as though it never happened.' },
+      { type: 'instagram', url: 'https://www.instagram.com/p/DM5smgfS5CT/' },
       { type: 'twitter', url: 'https://x.com/banbadmen/status/1870030466381721913' },
       { type: 'insight', 
         title: 'Fluid Identity and Embracing Contradictions', 
@@ -213,6 +216,7 @@
         juxtapositions create a sense of novelty, something especially valuable in today\'s sea of digital noise.' },
       { type: 'tiktok', videoId: '7123685232489958702' },
       { type: 'tiktok', videoId: '7458831430114675974' },
+      { type: 'twitter', url: 'https://x.com/skye_Z2/status/1949969710000283990' },
       // { type: 'instagram', url: 'https://www.instagram.com/p/C_ElTquy_4P/' },
       // { type: 'tiktok', videoId: '' },
       { type: 'insight', 
@@ -229,7 +233,8 @@
         awareness in an attention economy where speed and relatability matter most.' },
       { type: 'image', src: 'images/Screenshot 2025-08-20 at 13.48.36.png' },
       { type: 'image', src: 'images/Screenshot 2025-08-20 at 14.08.25.png' },
-      { type: 'image', src: 'images/4a83e976139837c2e4c3f0b27a37dc4f.jpeg' }
+      { type: 'image', src: 'images/4a83e976139837c2e4c3f0b27a37dc4f.jpeg' },
+      { type: 'twitter', url: 'https://x.com/tracebelll/status/1931784190439346329' }
     ];
 
     const feed = document.getElementById('feed');
@@ -291,9 +296,8 @@
           iframe.setAttribute('allow', 'encrypted-media; fullscreen;');
           iframe.setAttribute('loading', 'lazy');
           iframe.frameBorder = 0;
-          iframe.style.width = '100%';
+          iframe.style.width = '90%';
           iframe.style.aspectRatio = '9 / 16';
-          iframe.style.maxHeight = '500px';       
           iframe.style.overflow = 'hidden';      
           iframe.style.pointerEvents = 'auto';
 
