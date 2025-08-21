@@ -53,7 +53,14 @@
       display:flex; align-items:center; justify-content:center; width:100%;
     }
     .mediaWrap > * { max-width: 540px; width: 100%; }
-    .tt-player { aspect-ratio: 9 / 16; border: 0; width: 100%; }
+    .tt-player {
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      max-height: 90vh;
+      border: 0;
+      overflow: hidden;
+      pointer-events: auto;
+    }
     .tiktok-embed, .instagram-media, .twitter-tweet { max-width:540px; width:100%; margin:0 auto; }
     footer { text-align:center; padding: 12px 0; color:#555; }
   
@@ -276,6 +283,9 @@
           iframe.frameBorder = 0;
           iframe.style.width = '100%';
           iframe.style.aspectRatio = '9 / 16';
+          iframe.style.maxHeight = '90vh';       
+          iframe.style.overflow = 'hidden';      
+          iframe.style.pointerEvents = 'auto';
 
           holder.appendChild(iframe);
           wrap.appendChild(holder);
