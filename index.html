@@ -99,7 +99,7 @@
       { type: 'instagram', url: 'https://www.instagram.com/p/DChWQpOyhxR/' },
       { type: 'instagram', url: 'https://www.instagram.com/p/DFn1l4QyUCq/' },
       { type: 'instagram', url: 'https://www.instagram.com/p/DJ12ZtLssIg/' },
-      { type: 'instagram', url: 'https://www.instagram.com/p/DM-RB3ky_6A/' },
+      // { type: 'instagram', url: 'https://www.instagram.com/p/DM-RB3ky_6A/' },
       { type: 'tiktok', cite: 'https://www.tiktok.com/@francesca_ourlittlelife/video/7210767826682907931', videoId: '7210767826682907931' },
       { type: 'tiktok', cite: 'https://www.tiktok.com/@niafromnyc/video/7275340104791625002', videoId: '7275340104791625002' },
       { type: 'tiktok', cite: 'https://www.tiktok.com/@lucieliftss/video/7239457911213133083', videoId: '7239457911213133083' },
@@ -140,19 +140,36 @@
     
     const FEED = [
       {type: 'insight',
-        title: 'Gen Z live on their phones for over six hours a day. That\'s why we\'ve curated a digital feed.', 
-        text: 'This feed has been created to give you a glimpse into the online world of Gen Z. \
-        Who are they listening to, understanding the dynamics between algorithm, person & creator? And decoding their exclusive vacuum of internet semiotics. \
-        \\n\\n There are 2 guiding compasses of the scroll: what they want to feel, and what they want to achieve. \
-        \\n\\n **Feeling**: | Scared | Sad | Amused | Comforted | Reassured | Confident | Inspired | \
-        \\n\\n **Finding**: | Learning | Entertainment | Inspiration |'},
+        title: 'Gen Z live on their phones for over six hours a day. This feed has been curated to give you a glimpse into the online world of Gen Z.', 
+        text: 'What\'s been going viral? \
+        \\n\\n Who are they listening to? And what communities are they immersing themselves in? \
+        \\n\\n How does the content they consume shape and inspire their opinions, attitudes, and behaviours? \
+        \\n\\n What kind of content grabs their attention? \
+        \\n\\n How do they reinterpret the world through the lens of memes and internet syntax?' },
       { type: 'insight', 
-        title: 'The Spectrum of Social Media', 
-        text: 'xxx' },
-      POSTS[0],
+        title: 'Who are they listening to?', 
+        text: 'Gen Z immerse themsevles in an online ecosystem of influencers, content creators, micro communities, and celebrities.' },
+      { type: 'insight', 
+        title: 'Influencers', 
+        text: 'As the name suggests, influencers shape behaviours, opinions, and most importantly consumer choices. They earn \
+        their platform through being either relatable, aspirational, or knowledgeable and therefore trustworthy of a particular \
+        niche (e.g. fashion). From the user POV their engagement is driven by "I want what they have".' },
+     { type: 'instagram', url: 'https://www.instagram.com/p/DF_fPpzpDgq/' },
       POSTS[1],
+      { type: 'insight', 
+        title: 'Content Creators',
+        text: 'Simply put, anyone who puts out content for public viewing is considered a content creator. They often share \
+        similarities with influencers, but their focus isn\’t necessarily on swaying consumer decisions. Their primary goal is to create, whether \
+        that means entertaining, educating, expressing themselves, or telling stories. From the user POV their engagement is driven \
+        by "I like how they make me feel".' },
       POSTS[2],
-      POSTS[16],
+      { type: 'insight', 
+        title: 'Micro-Communities',
+        text: 'People engage with micro communities that align with their interests. In reddit this looks like joining \
+        communities, on TikTok and Instagram this translates through one\'s algorithm.' },
+      { type: 'image', src: 'images/Screenshot 2025-08-20 at 12.33.54.png' },
+      { type: 'image', src: 'images/Screenshot 2025-08-20 at 12.35.45.png' },
+      { type: 'image', src: 'images/Screenshot 2025-08-20 at 11.31.34.png' },
       POSTS[4],
       { type: 'insight', 
         title: 'What\'s gone viral in 2025?', 
@@ -199,16 +216,6 @@
 
     const ttPlayers = new WeakMap(); // iframe -> state
 
-    // function ttIframeSrc(id, opts = {}) {
-    //   const q = new URLSearchParams({
-    //     autoplay: String(opts.autoplay ?? 0),
-    //     controls: String(opts.controls ?? 0),
-    //     loop:     String(opts.loop ?? 1),
-    //     music_info: '0',
-    //     description: '0'
-    //   });
-    //   return `https://www.tiktok.com/player/v1/${id}?${q}`;
-    // }
     function postToPlayer(iframe, type, value) {
       try {
         iframe.contentWindow && iframe.contentWindow.postMessage({ 'x-tiktok-player': true, type, value }, '*');
@@ -315,7 +322,7 @@
             .join('');
 
           box.innerHTML = `
-            <img class="brand-header" src="logo.png" alt="Logo">
+            <img class="brand-header" src="images/logo.png" alt="Logo">
             <h2>${post.title || 'Insight'}</h2>
             ${paragraphs}
           `;
@@ -323,7 +330,21 @@
           wrap.appendChild(box);
           art.setAttribute('aria-busy', 'false');
         };
-      }
+      } else if (post.type === 'image') {
+          art.dataset.kind = 'image';
+          art.__mount = () => {
+            const img = document.createElement('img');
+            img.src = post.src;
+            img.alt = post.alt || 'Image';
+            img.loading = 'lazy';
+            img.style.width = '100%';
+            img.style.borderRadius = '12px';
+            img.style.objectFit = 'contain';
+            img.style.aspectRatio = '9 / 16';
+            wrap.appendChild(img);
+            art.setAttribute('aria-busy', 'false');
+          };
+        }
 
       return frag;
     }
@@ -339,19 +360,6 @@
         document.head.appendChild(s);
       });
     }
-
-    // function mixPostsWithInsights(posts, insightsMap) {
-    //   const combined = [];
-    //   for (let i = 0; i < posts.length; i++) {
-    //     if (insightsMap[i]) {
-    //       combined.push(insightsMap[i]); // insert insight BEFORE post[i]
-    //     }
-    //     combined.push(posts[i]);
-    //   }
-    //   return combined;
-    // }
-
-    // const withInsights = mixPostsWithInsights(POSTS,INSIGHTS);
 
     const arts = FEED.map((post) => {
       const frag = makeCard(post);
@@ -433,7 +441,7 @@
     // Wait a tick so some iframes exist
     setTimeout(refreshPlayObservers, 300);
 
-    // Optional: keyboard up/down to advance
+    // Keyboard up/down to advance
     rootEl.addEventListener('keydown', (e) => {
       if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
       e.preventDefault();
