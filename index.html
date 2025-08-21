@@ -84,13 +84,25 @@
       margin-top: 1em;
       color: #333;
     }
-
     .insight .brand-header {
       display: block;
       margin: 0 auto 12px;
       max-width: 100%;
     }
-
+    .tiktok-touch-guard {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      max-height: 90vh;
+      overflow: hidden;
+    }
+    .tiktok-touch-guard iframe {
+      pointer-events: none; /* 👈 prevents scroll hijack */
+    }
+    .tiktok-touch-guard:focus-within iframe,
+    .tiktok-touch-guard:hover iframe {
+      pointer-events: auto; /* 👈 re-enable interaction on hover/tap */
+    }
   </style>
 </head>
 <body>
@@ -287,7 +299,11 @@
           iframe.style.overflow = 'hidden';      
           iframe.style.pointerEvents = 'auto';
 
-          holder.appendChild(iframe);
+          const touchGuard = document.createElement('div');
+          touchGuard.className = 'tiktok-touch-guard';
+          touchGuard.tabIndex = 0;
+          touchGuard.appendChild(iframe);
+          holder.appendChild(touchGuard);
           wrap.appendChild(holder);
 
           art.setAttribute('aria-busy', 'false');
